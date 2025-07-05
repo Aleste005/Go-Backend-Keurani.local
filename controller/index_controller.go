@@ -8,7 +8,7 @@ import (
 func TampilkanHalamanIndex(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("view/index.html")
 	if err != nil {
-		http.Error(w, "Gagal memuat halaman index", http.StatusInternalServerError)
+		http.Error(w, "Gagal memuat halaman index (utama)", http.StatusInternalServerError)
 		return
 	}
 
