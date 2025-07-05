@@ -1,0 +1,18 @@
+# Go build files
+bin/
+*.exe
+*.out
+*.test
+
+# Env & sensitive files
+.env
+
+# Archives
+*.rar
+*.zip
+
+# Dependency directories
+vendor/
+
+# IDE/editor configs
+.vscode/
