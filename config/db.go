@@ -1,4 +1,4 @@
-// File: config/db.go
+// File: config/db.go untuk mengatur koneksi ke database MySQL
 package config
 
 import (
