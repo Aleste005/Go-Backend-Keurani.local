@@ -1,4 +1,3 @@
-// File: controller/login_controller.go
 package controller
 
 import (
@@ -6,28 +5,39 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dgrijalva/jwt-go" // pastikan ini diimport
-	"go-backend-keurani.local/middleware"
+	"github.com/dgrijalva/jwt-go"
+	"go-backend-keurani.local/config"
 	"go-backend-keurani.local/utils"
 )
 
 // Struktur permintaan login
 type LoginRequest struct {
 	Username string `json:"username"`
-	Password string `json:"password"`
+	NoHP     string `json:"no_hp"` // ubah dari password ke no_hp
 }
+
+// Struktur JWT claims
+type MyClaims struct {
+	Username string `json:"username"`
+	jwt.StandardClaims
+}
+
+// 🔐 Secret key JWT
+var jwtKey = []byte("rahasia123")
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		utils.KirimError(w, http.StatusBadRequest, "Permintaan tidak valid")
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		utils.KirimError(w, http.StatusBadRequest, "Format request salah")
 		return
 	}
 
-	// Login manual sederhana
-	if req.Username != "admin" || req.Password != "123456" {
-		utils.KirimError(w, http.StatusUnauthorized, "Username atau password salah")
+	db := config.GetDB()
+	row := db.QueryRow("SELECT nama FROM user WHERE username = ? AND no_hp = ?", req.Username, req.NoHP)
+
+	var nama string
+	if err := row.Scan(&nama); err != nil {
+		utils.KirimError(w, http.StatusUnauthorized, "Login gagal: username atau no HP salah")
 		return
 	}
 
@@ -37,7 +47,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		"exp":      time.Now().Add(2 * time.Hour).Unix(),
 	})
 
-	tokenString, err := token.SignedString(middleware.SecretKey)
+	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
 		utils.KirimError(w, http.StatusInternalServerError, "Gagal membuat token")
 		return

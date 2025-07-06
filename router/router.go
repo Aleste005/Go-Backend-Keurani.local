@@ -1,4 +1,3 @@
-// File: router/router.go
 package router
 
 import (
@@ -16,12 +15,12 @@ func BuatRouterBaru() http.Handler {
 	router.Use(middleware.Logger)
 	router.Use(middleware.CORS)
 
-	// ✅ Redirect dari "/" ke "/RestAPI-BKA"
+	// 🔄 Redirect "/" ke dashboard
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/RestAPI-BKA", http.StatusFound)
 	}).Methods("GET")
 
-	// ✅ Tampilkan halaman dashboard
+	// 🖥️ Halaman dashboard utama
 	router.HandleFunc("/RestAPI-BKA", func(w http.ResponseWriter, r *http.Request) {
 		tmpl, err := template.ParseFiles("view/index.html")
 		if err != nil {
@@ -34,15 +33,21 @@ func BuatRouterBaru() http.Handler {
 		tmpl.Execute(w, data)
 	}).Methods("GET")
 
-	// 🔐 Protected API group
+	// 🔓 Halaman HTML yang tidak butuh token (View)
+	controller.RegisterPenggunaRoutes(router)     // /pengguna
+	controller.RegisterPendidikanRoutes(router)   // /pendidikan
+
+	// 🔐 Grup API yang butuh token (JSON)
 	api := router.PathPrefix("/api").Subrouter()
-	api.Use(middleware.AuthorizationMiddleware) // 🔐 Pasang middleware auth di sini
+	api.Use(middleware.AuthorizationMiddleware)
 
-	// 🔐 Daftarkan semua endpoint yang butuh token di bawah ini
-	controller.RegisterPenggunaRoutes(api)
-	controller.RegisterPendidikanRoutes(api)
+	// Daftar endpoint API dalam grup /api
+	api.HandleFunc("/pengguna", controller.AmbilDataPenggunaAPI).Methods("GET")
+	api.HandleFunc("/pendidikan", controller.GetPendidikan).Methods("GET")
+	api.HandleFunc("/pendidikan", controller.CreatePendidikan).Methods("POST")
+	api.HandleFunc("/pendidikan/{id}", controller.DeletePendidikan).Methods("DELETE")
 
-	// (Opsional) Tambahkan endpoint login (tanpa middleware auth)
+	// 🔓 Endpoint login (tanpa middleware token)
 	router.HandleFunc("/login", controller.Login).Methods("POST")
 
 	return router

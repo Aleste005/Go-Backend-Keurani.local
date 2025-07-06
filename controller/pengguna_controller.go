@@ -9,21 +9,18 @@ import (
 	"go-backend-keurani.local/utils"
 )
 
-// Fungsi untuk render halaman
 func TampilkanHalamanPengguna(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("view/user_view.gohtml")
+	tmpl, err := template.ParseFiles("view/user_view.html")
 	if err != nil {
 		http.Error(w, "Gagal memuat template", http.StatusInternalServerError)
 		return
 	}
-
 	data := map[string]interface{}{
 		"Judul": "Daftar Pengguna",
 	}
 	tmpl.Execute(w, data)
 }
 
-// ✅ Fungsi API untuk ambil data pengguna dalam format JSON
 func AmbilDataPenggunaAPI(w http.ResponseWriter, r *http.Request) {
 	daftar, err := model.AmbilSemuaPengguna()
 	if err != nil {
@@ -34,11 +31,10 @@ func AmbilDataPenggunaAPI(w http.ResponseWriter, r *http.Request) {
 	utils.KirimJSON(w, daftar)
 }
 
-// ✅ Daftarkan semua route pengguna (view dan API)
 func RegisterPenggunaRoutes(r *mux.Router) {
-	// View
+	// Halaman biasa (tanpa token)
 	r.HandleFunc("/pengguna", TampilkanHalamanPengguna).Methods("GET")
 
-	// API
+	// Endpoint API (sudah otomatis kena middleware dari router.go)
 	r.HandleFunc("/api/pengguna", AmbilDataPenggunaAPI).Methods("GET")
 }

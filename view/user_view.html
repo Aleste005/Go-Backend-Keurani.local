@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{.Judul}}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      h1 {
+        color: #333;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>{{.Judul}}</h1>
+
+    <table id="tabelPengguna">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Nama</th>
+          <th>Level</th>
+          <th>Alamat</th>
+          <th>No HP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data dari API akan muncul di sini -->
+      </tbody>
+    </table>
+
+    <script>
+      const token =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTE3ODQ5MTIsInVzZXJuYW1lIjoiMTIzIn0.2a85iVXUtplLWRaIyqdf5XPLbjxFXqErqm4zHq78wo8";
+
+      fetch("http://localhost:8080/api/pengguna", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Token salah atau expired");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const tbody = document.querySelector("#tabelPengguna tbody");
+          data.forEach((item, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${index + 1}</td>
+              <td>${item.nama}</td>
+              <td>${item.level}</td>
+              <td>${item.alamat}</td>
+              <td>${item.no_hp}</td>
+            `;
+            tbody.appendChild(row);
+          });
+        })
+        .catch((error) => {
+          console.error("Gagal:", error);
+          alert("Token salah atau server error");
+        });
+    </script>
+  </body>
+</html>
