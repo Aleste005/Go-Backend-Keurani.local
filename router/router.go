@@ -21,7 +21,7 @@ func BuatRouterBaru() http.Handler {
 		http.Redirect(w, r, "/RestAPI-BKA", http.StatusFound)
 	}).Methods("GET")
 
-	// ✅ Tampilkan halaman dashboard di "/RestAPI-BKA"
+	// ✅ Tampilkan halaman dashboard
 	router.HandleFunc("/RestAPI-BKA", func(w http.ResponseWriter, r *http.Request) {
 		tmpl, err := template.ParseFiles("view/index.html")
 		if err != nil {
@@ -34,9 +34,16 @@ func BuatRouterBaru() http.Handler {
 		tmpl.Execute(w, data)
 	}).Methods("GET")
 
-	// ✅ Register semua endpoint API
-	controller.RegisterPenggunaRoutes(router)
-	controller.RegisterPendidikanRoutes(router)
+	// 🔐 Protected API group
+	api := router.PathPrefix("/api").Subrouter()
+	api.Use(middleware.AuthorizationMiddleware) // 🔐 Pasang middleware auth di sini
+
+	// 🔐 Daftarkan semua endpoint yang butuh token di bawah ini
+	controller.RegisterPenggunaRoutes(api)
+	controller.RegisterPendidikanRoutes(api)
+
+	// (Opsional) Tambahkan endpoint login (tanpa middleware auth)
+	router.HandleFunc("/login", controller.Login).Methods("POST")
 
 	return router
 }

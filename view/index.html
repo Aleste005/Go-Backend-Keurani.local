@@ -75,19 +75,39 @@
       <h1>🚀 {{.Judul}}</h1>
       <p class="sub">REST API untuk Sistem Kepegawaian Pemerintah Aceh</p>
 
+      <!-- LOGIN -->
+      <div class="endpoint">
+        <h3>POST <code>/login</code></h3>
+        <p>
+          <a
+            href="#"
+            onclick="alert('Gunakan tool seperti Postman atau curl untuk mengakses endpoint ini.')"
+            >Login untuk mendapatkan JWT Token</a
+          >
+          – Kirim username & password untuk mendapatkan token.
+        </p>
+        <p><strong>Contoh JSON:</strong></p>
+        <pre><code>{
+  "username": "admin",
+  "password": "123456"
+}</code></pre>
+      </div>
+
+      <!-- PENGGUNA -->
       <div class="endpoint">
         <h3>GET <code>/api/pengguna</code></h3>
         <p>
           <a href="/api/pengguna" target="_blank">Lihat JSON Response</a> –
-          Menampilkan semua data pengguna dalam format JSON.
+          Menampilkan semua data pengguna. <strong>Wajib token.</strong>
         </p>
       </div>
 
+      <!-- PENDIDIKAN -->
       <div class="endpoint">
         <h3>GET <code>/api/pendidikan</code></h3>
         <p>
           <a href="/api/pendidikan" target="_blank">Lihat JSON Response</a> –
-          Data pendidikan seluruh ASN.
+          Menampilkan data pendidikan ASN. <strong>Wajib token.</strong>
         </p>
       </div>
 
