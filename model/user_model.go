@@ -8,6 +8,7 @@ import (
 // Struktur data untuk tabel 'user'
 type Pengguna struct {
 	ID     int    `json:"id_user"`
+	Username string `json:"username"`
 	Nama   string `json:"nama"`
 	Level  string `json:"level"`
 	Alamat string `json:"alamat"`
@@ -18,7 +19,7 @@ type Pengguna struct {
 func AmbilSemuaPengguna() ([]Pengguna, error) {
 	db := config.GetDB()
 
-	baris, kesalahan := db.Query("SELECT id_user, nama, level, alamat, no_hp FROM user")
+	baris, kesalahan := db.Query("SELECT id_user, username, nama, level, alamat, no_hp FROM user")
 	if kesalahan != nil {
 		return nil, kesalahan
 	}
@@ -28,7 +29,7 @@ func AmbilSemuaPengguna() ([]Pengguna, error) {
 
 	for baris.Next() {
 		var pengguna Pengguna
-		kesalahan := baris.Scan(&pengguna.ID, &pengguna.Nama, &pengguna.Level, &pengguna.Alamat, &pengguna.NoHP)
+		kesalahan := baris.Scan(&pengguna.ID, &pengguna.Username, &pengguna.Nama, &pengguna.Level, &pengguna.Alamat, &pengguna.NoHP)
 		if kesalahan != nil {
 			return nil, kesalahan
 		}
